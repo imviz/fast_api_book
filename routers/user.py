@@ -11,10 +11,8 @@ router = APIRouter(
     prefix="/user",
 )
 
-# admin can only create user
 
-
-@router.post("/")
+@router.post("/", status_code=status.HTTP_201_CREATED)
 def create_user(
     request: UserSchema, current_user: TokenData = Depends(get_current_user)
 ):
@@ -36,4 +34,25 @@ def create_user(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="you have no permission to create a user",
+        )
+
+
+@router.get("/")
+def get_all_user(current_user: TokenData = Depends(get_current_user)):
+    user = (
+        db.session_maker.query(usermodel.UserModel)
+        .filter(usermodel.UserModel.email == current_user.email)
+        .first()
+    )
+    if user.is_admin:
+        users = (
+            db.session_maker.query(usermodel.UserModel)
+            .filter(usermodel.UserModel.is_admin == False)
+            .all()
+        )
+        return users
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="you have no permission to see user list",
         )

@@ -13,7 +13,6 @@ def create_admin(db):
         .filter(usermodel.UserModel.email == INI_EMAIL)
         .first()
     )
-
     if not admin:
         hashed_pass = encoding_password(INI_PASSWORD)
         new_user = usermodel.UserModel(

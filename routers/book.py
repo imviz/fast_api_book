@@ -131,7 +131,7 @@ def delete_book(id, current_user: TokenData = Depends(get_current_user)):
                 bookmodel.BookModel.id == id
             ).delete(synchronize_session=False)
             db.session_maker.commit()
-            return {f"deleted {id}"}
+            return {"detail": f"deleted {id}"}
         else:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -139,5 +139,5 @@ def delete_book(id, current_user: TokenData = Depends(get_current_user)):
             )
     else:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, details=f"no book in this id {id}"
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"no book in this id {id}"
         )
