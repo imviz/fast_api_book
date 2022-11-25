@@ -1,10 +1,8 @@
-def test_login_succes(normal_user):
-    data = {"username": "vishnu@e.com", "password": "password"}
-    response = normal_user.post("/login", data=data)
-    assert response.status_code == 200
+class TestLogin:
+    def test_login_succes(self, normal_user, user_creation):
+        response = normal_user.post("/login", data=user_creation)
+        assert response.status_code == 200
 
-
-def test_login_fail(normal_user):
-    data = {"username": "gagagag@jhfd.com", "password": "34343"}
-    response = normal_user.post("/login", data=data)
-    assert response.status_code == 404
+    def test_login_no_data_given_fail(self, normal_user):
+        response = normal_user.post("/login")
+        assert response.status_code == 422

@@ -109,7 +109,7 @@ def update_book(
             )
     else:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, details=f"no book in this id {id}"
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"no book in this id {id}"
         )
 
 

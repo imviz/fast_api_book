@@ -1,32 +1,56 @@
 import pytest
 from fastapi.testclient import TestClient
-from utils import authentication
 
 from main import app
 from models.db import session_maker
+from tests.utils import helper
 
 client = TestClient(app)
 
-generated_email = authentication.random_char(7) + "@gmail.com"
+generated_email = helper.random_char(7) + "@gmail.com"
 ADMIN_EMAIL = "vishnu@e.com"
 ADMIN_PASSWORD = "password"
-user_email = "anu@es.com"
-
-
-@pytest.fixture(scope="module")
-def admin_user_token():
-    return authentication.authentication_headers(
-        client=client, email=ADMIN_EMAIL, password=ADMIN_PASSWORD
-    )
-
-
-@pytest.fixture(scope="module")
-def normal_user_token_headers():
-    return authentication.authentication_from_email(
-        client=client, email=user_email, session_maker=session_maker
-    )
 
 
 @pytest.fixture(scope="module")
 def normal_user():
     return client
+
+
+@pytest.fixture(scope="module")
+def admin_authentication():
+    return helper.user_authentication(
+        client=client, username=ADMIN_EMAIL, password=ADMIN_PASSWORD
+    )
+
+
+@pytest.fixture(scope="module")
+def user_creation():
+    return helper.user_creation(username=generated_email, session_maker=session_maker)
+
+
+@pytest.fixture(scope="module")
+def user_authentication(user_creation):
+    return helper.user_authentication(
+        client=client,
+        username=user_creation["username"],
+        password=user_creation["password"],
+    )
+
+
+@pytest.fixture(scope="module")
+def testuser_creation_and_authentication():
+    data = helper.user_creation(username=generated_email, session_maker=session_maker)
+    return helper.user_authentication(
+        client=client, username=data["username"], password=data["password"]
+    )
+
+
+@pytest.fixture(scope="module")
+def create_book(user_authentication):
+    name = helper.random_char(7)
+    data = {"name": name}
+    session = user_authentication
+    response = session.post("/book", json=data)
+    value = response.json()
+    return value
