@@ -1,8 +1,8 @@
 import pytest
 from fastapi.testclient import TestClient
 
+from db.database import session_maker
 from main import app
-from models.db import session_maker
 from tests.utils import helper
 
 client = TestClient(app)

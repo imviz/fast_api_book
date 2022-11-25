@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from models import bookmodel, db, usermodel
+from db import database
+from models import bookmodel, usermodel
 from schema.schema import BookSchema, TokenData, UpdateBookSchema
 
-from .oauth2 import get_current_user
+from ..utils.oauth2 import get_current_user
 
 router = APIRouter(
     tags=["book"],
@@ -18,26 +19,26 @@ def create_book(
     request: BookSchema, current_user: TokenData = Depends(get_current_user)
 ):
     userz = (
-        db.session_maker.query(usermodel.UserModel)
+        database.session_maker.query(usermodel.UserModel)
         .filter(usermodel.UserModel.email == current_user.email)
         .first()
     )
     new_book = bookmodel.BookModel(name=request.name, user_id=userz.id)
-    db.session_maker.add(new_book)
-    db.session_maker.commit()
-    db.session_maker.refresh(new_book)
+    database.session_maker.add(new_book)
+    database.session_maker.commit()
+    database.session_maker.refresh(new_book)
     return new_book
 
 
 @router.get("/", status_code=status.HTTP_200_OK)
 def get_all_book(current_user: TokenData = Depends(get_current_user)):
     userz = (
-        db.session_maker.query(usermodel.UserModel)
+        database.session_maker.query(usermodel.UserModel)
         .filter(usermodel.UserModel.email == current_user.email)
         .first()
     )
     books = (
-        db.session_maker.query(bookmodel.BookModel)
+        database.session_maker.query(bookmodel.BookModel)
         .filter(bookmodel.BookModel.user_id == userz.id)
         .all()
     )
@@ -53,19 +54,19 @@ def get_all_book(current_user: TokenData = Depends(get_current_user)):
 @router.get("/{id}", status_code=status.HTTP_200_OK)
 def get_book(id, current_user: TokenData = Depends(get_current_user)):
     bookz = (
-        db.session_maker.query(bookmodel.BookModel)
+        database.session_maker.query(bookmodel.BookModel)
         .filter(bookmodel.BookModel.id == id)
         .first()
     )
     userz = (
-        db.session_maker.query(usermodel.UserModel)
+        database.session_maker.query(usermodel.UserModel)
         .filter(usermodel.UserModel.email == current_user.email)
         .first()
     )
     if bookz:
         if userz.id == bookz.user_id:
             books = (
-                db.session_maker.query(bookmodel.BookModel)
+                database.session_maker.query(bookmodel.BookModel)
                 .filter(bookmodel.BookModel.id == id)
                 .first()
             )
@@ -86,21 +87,21 @@ def update_book(
     id, request: UpdateBookSchema, current_user: TokenData = Depends(get_current_user)
 ):
     bookz = (
-        db.session_maker.query(bookmodel.BookModel)
+        database.session_maker.query(bookmodel.BookModel)
         .filter(bookmodel.BookModel.id == id)
         .first()
     )
     userz = (
-        db.session_maker.query(usermodel.UserModel)
+        database.session_maker.query(usermodel.UserModel)
         .filter(usermodel.UserModel.email == current_user.email)
         .first()
     )
     if bookz:
         if userz.id == bookz.user_id:
-            db.session_maker.query(bookmodel.BookModel).filter(
+            database.session_maker.query(bookmodel.BookModel).filter(
                 bookmodel.BookModel.id == id
             ).update({"name": request.name})
-            db.session_maker.commit()
+            database.session_maker.commit()
             return request
         else:
             raise HTTPException(
@@ -116,21 +117,21 @@ def update_book(
 @router.delete("/{id}", status_code=status.HTTP_200_OK)
 def delete_book(id, current_user: TokenData = Depends(get_current_user)):
     bookz = (
-        db.session_maker.query(bookmodel.BookModel)
+        database.session_maker.query(bookmodel.BookModel)
         .filter(bookmodel.BookModel.id == id)
         .first()
     )
     userz = (
-        db.session_maker.query(usermodel.UserModel)
+        database.session_maker.query(usermodel.UserModel)
         .filter(usermodel.UserModel.email == current_user.email)
         .first()
     )
     if bookz:
         if userz.id == bookz.user_id:
-            db.session_maker.query(bookmodel.BookModel).filter(
+            database.session_maker.query(bookmodel.BookModel).filter(
                 bookmodel.BookModel.id == id
             ).delete(synchronize_session=False)
-            db.session_maker.commit()
+            database.session_maker.commit()
             return {"detail": f"deleted {id}"}
         else:
             raise HTTPException(

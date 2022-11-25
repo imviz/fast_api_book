@@ -3,8 +3,9 @@ from datetime import timedelta
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 
+from db import database
 from hashing.hashing import verify_password
-from models import bookmodel, db, usermodel
+from models import bookmodel, usermodel
 
 from .jwt_token import ACCESS_TOKEN_EXPIRE_MINUTES, create_access_token
 
@@ -16,7 +17,7 @@ router = APIRouter(
 @router.post("/login")
 def login(form_data: OAuth2PasswordRequestForm = Depends()):
     userz = (
-        db.session_maker.query(usermodel.UserModel)
+        database.session_maker.query(usermodel.UserModel)
         .filter(usermodel.UserModel.email == form_data.username)
         .first()
     )

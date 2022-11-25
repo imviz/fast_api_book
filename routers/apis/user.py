@@ -1,10 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 
+from db import database
 from hashing.hashing import encoding_password
-from models import db, usermodel
+from models import usermodel
 from schema.schema import TokenData, UserSchema
 
-from .oauth2 import get_current_user
+from ..utils.oauth2 import get_current_user
 
 router = APIRouter(
     tags=["user"],
@@ -17,7 +18,7 @@ def create_user(
     request: UserSchema, current_user: TokenData = Depends(get_current_user)
 ):
     user = (
-        db.session_maker.query(usermodel.UserModel)
+        database.session_maker.query(usermodel.UserModel)
         .filter(usermodel.UserModel.email == current_user.email)
         .first()
     )
@@ -26,9 +27,9 @@ def create_user(
         new_user = usermodel.UserModel(
             name=request.name, email=request.email, password=hashed_pass
         )
-        db.session_maker.add(new_user)
-        db.session_maker.commit()
-        db.session_maker.refresh(new_user)
+        database.session_maker.add(new_user)
+        database.session_maker.commit()
+        database.session_maker.refresh(new_user)
         return new_user
     else:
         raise HTTPException(
@@ -40,13 +41,13 @@ def create_user(
 @router.get("/")
 def get_all_user(current_user: TokenData = Depends(get_current_user)):
     user = (
-        db.session_maker.query(usermodel.UserModel)
+        database.session_maker.query(usermodel.UserModel)
         .filter(usermodel.UserModel.email == current_user.email)
         .first()
     )
     if user.is_admin:
         users = (
-            db.session_maker.query(usermodel.UserModel)
+            database.session_maker.query(usermodel.UserModel)
             .filter(usermodel.UserModel.is_admin == False)
             .all()
         )

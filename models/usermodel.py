@@ -1,9 +1,9 @@
 import sqlalchemy
 
-from .db import Base
+from db import database
 
 
-class UserModel(Base):
+class UserModel(database.Base):
 
     __tablename__ = "users"
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)

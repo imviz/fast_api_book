@@ -1,8 +1,9 @@
 from fastapi import FastAPI
 
-from models.db import session_maker
-from models.initial import create_admin
-from routers import authentication, book, user
+from db.database import session_maker
+from db.initial import create_admin
+from routers.apis import book, user
+from routers.utils import authentication
 
 app = FastAPI()
 
