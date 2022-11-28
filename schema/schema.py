@@ -9,12 +9,24 @@ class UserSchema(BaseModel):
     password: str
 
 
+class UserShowSchema(BaseModel):
+    email: str
+    name: str
+
+    class Config:
+        orm_mode = True
+
+
 class BookSchema(BaseModel):
     name: str
 
 
-class UpdateBookSchema(BaseModel):
+class BookUserSchema(BaseModel):
     name: str
+    id: int
+
+    class Config:
+        orm_mode = True
 
 
 class Token(BaseModel):
@@ -24,6 +36,7 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     email: Optional[str] = None
+    id: int
 
 
 class LoginSchema(BaseModel):
