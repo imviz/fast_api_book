@@ -16,9 +16,9 @@ router = APIRouter(
 
 @router.post("/", response_model=BookUserSchema, status_code=status.HTTP_201_CREATED)
 def create_book(
-    request: BookSchema, current_user: TokenData = Depends(get_current_user)
+    book_name: BookSchema, current_user: TokenData = Depends(get_current_user)
 ):
-    return crud_book.crud_book.create_book(request, current_user.id)
+    return crud_book.crud_book.create_book(book_name, current_user.id)
 
 
 @router.get("/", response_model=List[BookUserSchema], status_code=status.HTTP_200_OK)
@@ -33,10 +33,10 @@ def get_book(id, current_user: TokenData = Depends(get_current_user)):
 
 @router.put("/{id}", response_model=BookUserSchema, status_code=status.HTTP_200_OK)
 def update_book(
-    id, request: BookSchema, current_user: TokenData = Depends(get_current_user)
+    id, book_name: BookSchema, current_user: TokenData = Depends(get_current_user)
 ):
     return crud_book.crud_book.update_book(
-        request=request, user_id=current_user.id, book_id=id
+        book_name=book_name, user_id=current_user.id, book_id=id
     )
 
 

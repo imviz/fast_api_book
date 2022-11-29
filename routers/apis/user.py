@@ -16,9 +16,9 @@ router = APIRouter(
 
 @router.post("/", response_model=UserShowSchema, status_code=status.HTTP_201_CREATED)
 def create_user(
-    requests: UserSchema, current_user: TokenData = Depends(get_admin_user)
+    userdata: UserSchema, current_user: TokenData = Depends(get_admin_user)
 ):
-    return crud_user.user_crud.user_create(request=requests)
+    return crud_user.user_crud.user_create(userdata=userdata)
 
 
 @router.get("/", response_model=List[UserShowSchema], status_code=status.HTTP_200_OK)

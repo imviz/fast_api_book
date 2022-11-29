@@ -39,10 +39,11 @@ def user_authentication(user_creation):
 
 
 @pytest.fixture(scope="module")
-def testuser_creation_and_authentication():
-    data = helper.user_creation(username=generated_email, session_maker=session_maker)
+def testuser_creation_and_authentication(user_creation):
     return helper.user_authentication(
-        client=client, username=data["username"], password=data["password"]
+        client=client,
+        username=user_creation["username"],
+        password=user_creation["password"],
     )
 
 

@@ -16,6 +16,7 @@ python-multipart = "*"
 isort = "*"
 pytest = "*"
 httpx = "*"
+python-dotenv = "*"
 
 [dev-packages]
 

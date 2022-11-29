@@ -29,6 +29,6 @@ def get_admin_user(current_user=Depends(get_current_user)):
         return user
     else:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
+            status_code=status.HTTP_404_NOT_FOUND,
             detail="you are no permission to access here",
         )

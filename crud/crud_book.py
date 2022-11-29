@@ -5,8 +5,8 @@ from models import bookmodel
 
 
 class Book:
-    def create_book(self, request, user_id):
-        new_book = bookmodel.BookModel(name=request.name, user_id=user_id)
+    def create_book(self, book_name, user_id):
+        new_book = bookmodel.BookModel(name=book_name.name, user_id=user_id)
         database.session_maker.add(new_book)
         database.session_maker.commit()
         database.session_maker.refresh(new_book)
@@ -45,7 +45,7 @@ class Book:
                 detail=f"no book in this id {book_id}",
             )
 
-    def update_book(self, book_id, user_id, request):
+    def update_book(self, book_id, user_id, book_name):
         book = (
             database.session_maker.query(bookmodel.BookModel)
             .filter(bookmodel.BookModel.id == book_id)
@@ -55,7 +55,7 @@ class Book:
             if book.user_id == user_id:
                 database.session_maker.query(bookmodel.BookModel).filter(
                     bookmodel.BookModel.id == book_id
-                ).update({"name": request.name})
+                ).update({"name": book_name.name})
                 database.session_maker.commit()
                 return book
             else:

@@ -4,7 +4,7 @@ from ..utils import helper
 
 
 class TestBook:
-    def test_create_book_sucess(self, user_authentication):
+    def test_create_book(self, user_authentication):
         name = helper.random_char(7)
         data = {"name": name}
         session = user_authentication
@@ -12,19 +12,19 @@ class TestBook:
         assert response.status_code == 201
         assert response.json()["name"] == name
 
-    def test_get_book_by_id_success(self, user_authentication, create_book):
+    def test_get_book_by_id(self, user_authentication, create_book):
         session = user_authentication
         id = create_book["id"]
         response = session.get(f"/book/{id}")
         assert response.status_code == 200
         assert response.json()["name"] == create_book["name"]
 
-    def test_get_all_books_success(self, user_authentication):
+    def test_get_all_books(self, user_authentication):
         session = user_authentication
         response = session.get("/book")
         assert response.status_code == 200
 
-    def test_update_book_success(self, user_authentication, create_book):
+    def test_update_book(self, user_authentication, create_book):
         name = helper.random_char(5)
         data = {"name": name}
         session = user_authentication
@@ -33,7 +33,7 @@ class TestBook:
         assert response.status_code == 200
         assert response.json()["name"] == name
 
-    def test_delete_book_success(self, user_authentication, create_book):
+    def test_delete_book(self, user_authentication, create_book):
         session = user_authentication
         id = create_book["id"]
         print(id, "rbntt")
